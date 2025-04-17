@@ -1,0 +1,166 @@
+ 1.  Project Definition 
+Project Title – Medical Education 3.3 NLP Service for Processing Lab/Radiology/Pathology Reports 
+ 
+Author(s) – John Trzesniak, Chandan Ravishankar, Steve Jerold 
+ 
+LOF Pillar - Medical Education 
+ 
+Last Updated:  3/27/2025 
+ 
+2.  Introduction 
+Purpose 
+Extract and process unstructured lab, radiology, and pathology reports from PDFs using NLP and LLM tokenization techniques. The solution will automatically extract key diagnostic elements, predict medical conditions based on the input document, and enable users to ask correlation questions about the report and related medical conditions. Tokenization will leverage models from Hugging Face and other online sources.   
+ 
+Extract elements from and process lab reports from PDFs using NLP to confirm or rule out diagnosis. 
+ 
+Scope 
+ 
+Included 
+This project covers the design, development, and deployment of a cloud-based service that processes PDF reports. It includes: 
+ 
+Extraction of text from PDFs. 
+Tokenization using NLP/LLM methods (using resources like Hugging Face). 
+Prediction of medical conditions based on extracted tokens. 
+Enrichment of the extracted data using online sources. 
+A query interface to answer correlation questions about the report and associated conditions. The solution does not include manual review processes or direct integration with hospital systems beyond data extraction and processing. 
+Format output for patient understanding of the results. 
+ 
+Excluded 
+ 
+Audience 
+The target audience includes clinicians, healthcare data scientists, medical educators, and researchers who need automated extraction and . 
+ 
+Overview 
+A Python-based service that processes lab, radiology, and pathology reports from PDFs. The system uses advanced NLP and LLM techniques to tokenize and extract valuable information, predict conditions, and support inquiry into correlations between findings and medical conditions by leveraging enriched online data. 
+ 
+Problem Description 
+Lab, radiology, and pathology reports are often stored as unstructured data in PDF format, making it difficult to efficiently extract clinically relevant information. Manually reviewing these reports to confirm or rule out a diagnosis is time-consuming and prone to human error. There is a need for a natural language processing (NLP)-based solution that can automatically extract key diagnostic elements from these reports and support clinical decision-making by accurately identifying findings that confirm or contradict a given diagnosis. 
+This project addresses these challenges by developing an automated NLP service that: 
+
+Extracts text from PDF reports. 
+Tokenizes the content using LLM-based methods. 
+Predicts potential medical conditions from the extracted data. 
+Enriches the extracted information by integrating online sources. 
+Provides a query interface for exploring correlations between diagnostic findings and conditions. 
+ 
+Glossary/Terminology  
+NLP (Natural Language Processing): Techniques to analyze and process human language. 
+LLM (Large Language Model): AI models used to understand and generate human language, for example, those available via Hugging Face. 
+Tokenization: The process of breaking text into tokens (words, phrases, symbols) for analysis. 
+Hugging Face: A platform offering state-of-the-art models and APIs for NLP tasks. 
+Enrichment: The process of augmenting extracted data with additional information from online sources. 
+ 
+Skills Needed 
+Python programming 
+SQL database management 
+API consumption 
+NLP and LLM techniques 
+Prompt engineering for LLMs 
+Experience with PDF processing libraries and integration with online data sources 
+ 
+3.  System Overview 
+Architecture 
+ The system will be a cloud-based service with the following components: 
+
+PDF Extraction Module: Extracts text from lab, radiology, and pathology PDFs. 
+NLP/LLM Tokenization Module: Uses models from Hugging Face (or equivalent) to tokenize and extract key elements from the text. 
+Condition Prediction Module: Applies machine learning techniques to predict medical conditions based on the tokenized data. 
+Data Enrichment Module: Integrates with online sources to add context and additional insights. 
+API & Query Interface: Provides REST API endpoints and a web-based interface for users to upload documents, view processing results, and ask correlation questions. 
+Database: Secure SQL database to store processed reports and extracted data. 
+Technologies Used 
+
+Python 
+NLP frameworks (e.g., Hugging Face Transformers) 
+PDF processing libraries (e.g., PyPDF2) 
+SQL databases 
+Cloud platforms (e.g., AWS) 
+API frameworks and possibly a lightweight UI for result queries 
+Dependencies 
+
+External NLP APIs and models (e.g., Hugging Face) 
+Online data sources for enrichment 
+Secure SQL database environment on a cloud platform 
+PDF processing tools 
+Hardware and Software Requirements 
+
+Modern workstations for development 
+Cloud instances for deployment and testing 
+Devices to test the web interface (desktops, tablets, etc.) 
+Secure access to a cloud-based SQL database 
+Data Description and Sources 
+
+Data Nature: Unstructured text from lab, radiology, and pathology PDF reports. 
+Data Size: Variable report sizes; may include detailed diagnostic narratives. 
+Sources: User-uploaded PDFs, supplemented by enrichment data from online healthcare information repositories. 
+Pre-Work/Setup 
+
+Establish the development environment with Python, necessary libraries, and SQL database tools. 
+Set up API endpoints and secure cloud infrastructure. 
+Obtain and configure access to NLP models (e.g., via Hugging Face) and relevant online enrichment sources. 
+ 
+ 
+
+4.  Functional Requirements 
+User Stories 
+
+As a clinician, I want to upload a lab or radiology report in PDF format so that I can quickly extract and analyze diagnostic information. 
+As a data scientist, I want the service to tokenize and process report data using NLP/LLM techniques so that I can predict possible medical conditions. 
+As a researcher, I want to query the processed reports to explore correlations between findings and medical conditions using enriched online data. 
+< Expand and finalize with TA support > 
+Use Cases 
+
+Uploading and processing PDF reports. 
+Tokenizing report text using advanced NLP/LLM techniques. 
+Predicting medical conditions from tokenized data. 
+Enriching extracted information with data from online sources. 
+Interacting with a query interface to ask correlation questions and receive detailed insights. 
+< Expand and finalize with TA support > 
+Prioritization 
+< Define this section more and explain how to use/apply the priorities below > 
+
+High Priority:  Accurate extraction and tokenization, condition prediction, and a responsive query interface. 
+Medium Priority:  Data enrichment using online sources. 
+Low Priority:  Advanced analytics and extended reporting features (for future sprints). 
+Data Structures and Interfaces < Expand and finalize with TA support > 
+
+Data Structures 
+JSON objects to store tokenized data, extracted diagnostic elements, and predicted conditions. 
+Database schemas for securely storing processed report data. 
+Interfaces 
+REST API endpoints for document upload, processing, and retrieval. 
+A web-based query interface for interactive data exploration. 
+List of Functional Requirements 
+
+Extract text from PDF reports (lab, radiology, pathology). 
+Tokenize and analyze extracted text using NLP/LLM methods. 
+Predict potential medical conditions based on tokenized data. 
+Enrich extracted information with relevant online data. 
+Provide a query interface for users to ask correlation questions. 
+Securely store processed data in an SQL database. 
+< Expand and finalize with TA support > 
+List of User Tasks 
+
+Upload a PDF report. 
+Initiate the NLP processing and tokenization workflow. 
+Review tokenized data and predicted conditions. 
+Use the query interface to ask for correlations between diagnostic findings and conditions. 
+Retrieve and analyze a detailed report of the processed data and enrichment findings. 
+< Expand and finalize with TA support > 
+ 
+General Schedule(Expand and finalize with TA support) 
+The project will be organized into iterative sprints, with each sprint focusing on developing, testing, and refining key functionalities. 
+
+ 
+Sprint 1 – From [Date] to [Date] 
+General description of the functionality to be developed, tested, and demonstrated at the end of this sprint. 
+ 
+Sprint 2 – From [Date] to [Date] 
+General description of the functionality to be developed, tested, and demonstrated at the end of this sprint. 
+ 
+Submission of Results 
+Expected deliverables and output.  What do students turn in as final deliverables and how? 
+All source code, data, databases, scripts, etc. for the application to be able to be built and run. 
+Demo of the app displaying how major functionality works. 
+Output report describing the development process and findings. 
+ 
