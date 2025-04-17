@@ -7,6 +7,9 @@ from utils.pdf_processor import extract_text_from_pdf
 from utils.nlp_processor import process_text
 from utils.condition_predictor import predict_conditions
 from utils.data_enricher import enrich_data
+from utils.chat_processor import chat_with_report
+from utils.infographic_generator import generate_full_infographic
+import datetime
 
 # Set up logging
 logger = logging.getLogger(__name__)
@@ -128,3 +131,71 @@ def query_report():
     except Exception as e:
         logger.error(f"Error processing query: {str(e)}")
         return jsonify({'error': f'Error processing query: {str(e)}'}), 500
+        
+@main_bp.route('/chat/<report_id>')
+def chat_page(report_id):
+    """
+    Render the chat interface for having a conversation about the medical report.
+    """
+    if report_id not in reports_data:
+        flash('Report not found', 'danger')
+        return redirect(url_for('main.index'))
+    
+    return render_template('chat.html', report_id=report_id)
+
+@main_bp.route('/api/chat', methods=['POST'])
+def chat_with_medical_report():
+    """
+    Process a chat message about the medical report using the medical LLM.
+    """
+    data = request.json
+    report_id = data.get('report_id')
+    message = data.get('message')
+    
+    if not report_id or not message:
+        return jsonify({'error': 'Missing report ID or message'}), 400
+    
+    if report_id not in reports_data:
+        return jsonify({'error': 'Report not found'}), 404
+    
+    try:
+        report = reports_data[report_id]
+        
+        # Process the message using the chat processor
+        response = chat_with_report(message, report)
+        
+        return jsonify({
+            'response': response,
+            'message': message
+        })
+    except Exception as e:
+        logger.error(f"Error processing chat message: {str(e)}")
+        return jsonify({'error': f'Error processing your message: {str(e)}'}), 500
+
+@main_bp.route('/infographic/<report_id>')
+def infographic_page(report_id):
+    """
+    Generate and render an infographic for the medical report.
+    """
+    if report_id not in reports_data:
+        flash('Report not found', 'danger')
+        return redirect(url_for('main.index'))
+    
+    try:
+        report = reports_data[report_id]
+        
+        # Generate the infographic
+        infographic = generate_full_infographic(report)
+        
+        # Get current date for the template
+        now = datetime.datetime.now()
+        
+        return render_template('infographic.html', 
+                              report=report, 
+                              report_id=report_id,
+                              infographic=infographic,
+                              now=now)
+    except Exception as e:
+        logger.error(f"Error generating infographic: {str(e)}")
+        flash(f'Error generating infographic: {str(e)}', 'danger')
+        return redirect(url_for('main.show_results', report_id=report_id))

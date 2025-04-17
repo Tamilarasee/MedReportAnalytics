@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <div>
+                    <i class="fas fa-chart-pie me-2 fs-4"></i>
+                    <h3 class="d-inline mb-0">Medical Report Infographic</h3>
+                </div>
+                <div>
+                    <button id="downloadButton" class="btn btn-light">
+                        <i class="fas fa-download me-2"></i> Download Infographic
+                    </button>
+                </div>
+            </div>
+            <div class="card-body" id="infographicContent">
+                <div class="row mb-4">
+                    <div class="col-md-12 text-center mb-4">
+                        <h2 class="text-primary">
+                            <i class="fas fa-heartbeat me-2"></i>
+                            Medical Report Analysis
+                        </h2>
+                        <h5 class="text-muted">Report: {{ report.filename }}</h5>
+                        <p class="text-muted">Generated on {{ now.strftime('%B %d, %Y') }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-5">
+                    <!-- Medical Terms Chart -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-stethoscope me-2"></i> Medical Terms Frequency
+                            </div>
+                            <div class="card-body text-center">
+                                <div id="termsChartContainer">
+                                    {% if infographic.terms_chart.image %}
+                                    <img src="data:image/png;base64,{{ infographic.terms_chart.image }}" 
+                                         class="img-fluid" alt="Medical Terms Chart">
+                                    {% else %}
+                                    <div>{{ infographic.terms_chart.html|safe }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sections Distribution Chart -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100 shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <i class="fas fa-file-medical-alt me-2"></i> Report Section Distribution
+                            </div>
+                            <div class="card-body text-center">
+                                <div id="sectionsChartContainer">
+                                    {% if infographic.sections_chart.image %}
+                                    <img src="data:image/png;base64,{{ infographic.sections_chart.image }}" 
+                                         class="img-fluid" alt="Sections Distribution Chart">
+                                    {% else %}
+                                    <div>{{ infographic.sections_chart.html|safe }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mb-5">
+                    <!-- Conditions Chart -->
+                    <div class="col-md-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="fas fa-disease me-2"></i> Potential Conditions Analysis
+                            </div>
+                            <div class="card-body text-center">
+                                <div id="conditionsChartContainer">
+                                    {% if infographic.conditions_chart.image %}
+                                    <img src="data:image/png;base64,{{ infographic.conditions_chart.image }}" 
+                                         class="img-fluid" alt="Potential Conditions Chart">
+                                    {% else %}
+                                    <div>{{ infographic.conditions_chart.html|safe }}</div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <!-- Key Findings -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-clipboard-list me-2"></i> Key Findings
+                            </div>
+                            <div class="card-body">
+                                {% if report.processed_data.sections.IMPRESSION %}
+                                <h6 class="fw-bold">Impression:</h6>
+                                <p>{{ report.processed_data.sections.IMPRESSION }}</p>
+                                {% elif report.processed_data.sections.CONCLUSION %}
+                                <h6 class="fw-bold">Conclusion:</h6>
+                                <p>{{ report.processed_data.sections.CONCLUSION }}</p>
+                                {% elif report.processed_data.sections.FINDINGS %}
+                                <h6 class="fw-bold">Findings:</h6>
+                                <p>{{ report.processed_data.sections.FINDINGS }}</p>
+                                {% else %}
+                                <p class="text-muted">No key findings sections identified in this report.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Medical Terms with References -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card shadow-sm h-100">
+                            <div class="card-header bg-secondary text-white">
+                                <i class="fas fa-book-medical me-2"></i> Medical Terms Reference
+                            </div>
+                            <div class="card-body">
+                                <div style="max-height: 300px; overflow-y: auto;">
+                                    {% if report.processed_data.medical_terms %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for term in report.processed_data.medical_terms %}
+                                        <li class="list-group-item bg-transparent">
+                                            <span class="fw-bold">{{ term }}</span>
+                                            {% if term in report.enriched_data.term_definitions %}
+                                            <p class="small text-muted mb-0">{{ report.enriched_data.term_definitions[term] }}</p>
+                                            {% endif %}
+                                            {% if term in report.enriched_data.reference_ranges %}
+                                            <p class="small text-info mb-0">Ref: {{ report.enriched_data.reference_ranges[term] }}</p>
+                                            {% endif %}
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                    {% else %}
+                                    <p class="text-muted">No specific medical terms were identified.</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Disclaimer -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Disclaimer:</strong> This infographic is generated using pattern recognition and is for informational purposes only. 
+                            It is not a medical diagnosis. Always consult with healthcare professionals for proper interpretation of medical reports.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12 text-center text-muted">
+                        <small>Generated by Medical Report Analyzer</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mb-4">
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('main.query_page', report_id=report_id) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-question-circle me-2"></i> Ask Questions
+                </a>
+                <a href="{{ url_for('main.chat_page', report_id=report_id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-comments me-2"></i> Chat with Report
+                </a>
+                <a href="{{ url_for('main.show_results', report_id=report_id) }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-file-medical-alt me-2"></i> View Report Analysis
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Download functionality
+        document.getElementById('downloadButton').addEventListener('click', function() {
+            const element = document.getElementById('infographicContent');
+            
+            // Show loading
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating...';
+            this.disabled = true;
+            
+            // Use setTimeout to allow the UI to update before the CPU-intensive operation
+            setTimeout(() => {
+                html2canvas(element, {
+                    scale: 2,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true
+                }).then(canvas => {
+                    // Create an image
+                    const imgData = canvas.toDataURL('image/png');
+                    
+                    // Create download link
+                    const link = document.createElement('a');
+                    link.download = 'medical-report-infographic.png';
+                    link.href = imgData;
+                    
+                    // Trigger download
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Reset button
+                    document.getElementById('downloadButton').innerHTML = '<i class="fas fa-download me-2"></i> Download Infographic';
+                    document.getElementById('downloadButton').disabled = false;
+                }).catch(err => {
+                    console.error('Error generating image:', err);
+                    alert('There was an error generating the image. Please try again.');
+                    
+                    // Reset button
+                    document.getElementById('downloadButton').innerHTML = '<i class="fas fa-download me-2"></i> Download Infographic';
+                    document.getElementById('downloadButton').disabled = false;
+                });
+            }, 100);
+        });
+    });
+</script>
+{% endblock %}
