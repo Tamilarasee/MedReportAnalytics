@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-primary text-white d-flex align-items-center">
+                <i class="fas fa-file-medical-alt me-2 fs-4"></i>
+                <h3 class="mb-0">Report Analysis Results</h3>
+            </div>
+            <div class="card-body">
+                <h4 class="mb-3">{{ report.filename }}</h4>
+                
+                <!-- Report Sections -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2"><i class="fas fa-clipboard-list text-primary me-2"></i>Report Sections</h5>
+                    {% if report.processed_data.sections and report.processed_data.sections|length > 0 %}
+                        <div class="accordion" id="sectionsAccordion">
+                            {% for section_name, section_content in report.processed_data.sections.items() %}
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                                data-bs-target="#section{{ loop.index }}">
+                                            {{ section_name }}
+                                        </button>
+                                    </h2>
+                                    <div id="section{{ loop.index }}" class="accordion-collapse collapse" data-bs-parent="#sectionsAccordion">
+                                        <div class="accordion-body">
+                                            {{ section_content }}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No structured sections were identified in this report.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Medical Terms -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2"><i class="fas fa-stethoscope text-success me-2"></i>Identified Medical Terms</h5>
+                    {% if report.processed_data.medical_terms and report.processed_data.medical_terms|length > 0 %}
+                        <div class="row">
+                            {% for term in report.processed_data.medical_terms %}
+                                <div class="col-md-6 mb-2">
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2 px-3">
+                                            <span class="fw-bold">{{ term }}</span>
+                                            {% if term in report.enriched_data.term_definitions %}
+                                                <p class="mb-0 small text-muted">{{ report.enriched_data.term_definitions[term] }}</p>
+                                            {% endif %}
+                                            {% if term in report.enriched_data.reference_ranges %}
+                                                <p class="mb-0 small text-info">Reference: {{ report.enriched_data.reference_ranges[term] }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            No specific medical terms were identified in this report.
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Original Text -->
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2"><i class="fas fa-file-alt text-info me-2"></i>Original Text</h5>
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="overflow-auto" style="max-height: 300px;">
+                                <pre class="text-wrap">{{ report.original_text }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <!-- Predicted Conditions -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-warning text-dark d-flex align-items-center">
+                <i class="fas fa-disease me-2 fs-4"></i>
+                <h4 class="mb-0">Predicted Conditions</h4>
+            </div>
+            <div class="card-body">
+                {% if report.conditions and report.conditions|length > 0 and report.conditions[0] != "No specific conditions identified" %}
+                    <ul class="list-group list-group-flush">
+                        {% for condition in report.conditions %}
+                            <li class="list-group-item bg-transparent">
+                                <div class="d-flex align-items-start">
+                                    <i class="fas fa-check-circle text-success me-2 mt-1"></i>
+                                    <div>
+                                        <strong>{{ condition }}</strong>
+                                        {% if condition in report.enriched_data.condition_info %}
+                                            <p class="mb-0 small text-muted">{{ report.enriched_data.condition_info[condition] }}</p>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No specific conditions were identified from this report. This could mean the report is normal or that our system couldn't identify clear diagnostic patterns.
+                    </div>
+                {% endif %}
+                
+                <div class="alert alert-warning mt-3">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <small>These predictions are based on pattern recognition and should not replace professional medical diagnosis. Always consult with a healthcare provider.</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-cogs me-2"></i> Actions
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.query_page', report_id=report_id) }}" class="btn btn-primary">
+                        <i class="fas fa-question-circle me-2"></i> Ask Questions About This Report
+                    </a>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-upload me-2"></i> Analyze Another Report
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Information Card -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <i class="fas fa-info-circle me-2"></i> Information
+            </div>
+            <div class="card-body">
+                <p class="mb-2">
+                    <i class="fas fa-brain text-warning me-2"></i>
+                    <strong>AI Model:</strong> BiomedVLP-BioViL-T
+                </p>
+                <p class="mb-2">
+                    <i class="fas fa-chart-bar text-info me-2"></i>
+                    <strong>Terms Identified:</strong> {{ report.processed_data.medical_terms|length }}
+                </p>
+                <p class="mb-0">
+                    <i class="fas fa-lightbulb text-success me-2"></i>
+                    <strong>Tip:</strong> Use the query page to ask specific questions about this report.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
