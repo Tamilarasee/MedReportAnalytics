@@ -47,9 +47,9 @@
                         <div class="row">
                             {% for term in report.processed_data.medical_terms %}
                                 <div class="col-md-6 mb-2">
-                                    <div class="card bg-light">
-                                        <div class="card-body py-2 px-3">
-                                            <span class="fw-bold">{{ term }}</span>
+                                    <div class="card border-info">
+                                        <div class="card-body py-2 px-3 bg-white text-dark">
+                                            <span class="fw-bold text-primary">{{ term }}</span>
                                             {% if term in report.enriched_data.term_definitions %}
                                                 <p class="mb-0 small text-muted">{{ report.enriched_data.term_definitions[term] }}</p>
                                             {% endif %}
