@@ -17,13 +17,86 @@
             </div>
             <div class="card-body" id="infographicContent">
                 <div class="row mb-4">
-                    <div class="col-md-12 text-center mb-4">
+                    <div class="col-md-12 text-center mb-2">
                         <h2 class="text-primary">
                             <i class="fas fa-heartbeat me-2"></i>
                             Medical Report Analysis
                         </h2>
                         <h5 class="text-muted">Report: {{ report.filename }}</h5>
                         <p class="text-muted">Generated on {{ now.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    
+                    <!-- Clinical History Box -->
+                    <div class="col-md-12 mb-3">
+                        <div class="card border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-clipboard-check me-2"></i> Clinical History
+                            </div>
+                            <div class="card-body py-2">
+                                <p class="mb-0">{{ infographic.clinical_context.history }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Technical Information Row -->
+                <div class="row mb-4">
+                    <!-- Imaging Techniques -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-info shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <i class="fas fa-microscope me-2"></i> Imaging Techniques
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    {% for technique in infographic.clinical_context.techniques %}
+                                        <li class="list-group-item bg-transparent">
+                                            <i class="fas fa-check-circle text-info me-2"></i> {{ technique }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Measurements & Lesion Details -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-warning shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <i class="fas fa-ruler-combined me-2"></i> Lesion Details
+                            </div>
+                            <div class="card-body">
+                                {% if infographic.clinical_context.measurements %}
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead>
+                                                <tr>
+                                                    <th scope="col">Size</th>
+                                                    <th scope="col">Location</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for measurement in infographic.clinical_context.measurements %}
+                                                    <tr>
+                                                        <td><strong>{{ measurement.size }}</strong></td>
+                                                        <td>{{ measurement.location }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="mt-2">
+                                        <span class="badge bg-info text-white">
+                                            <i class="fas fa-syringe me-1"></i> {{ infographic.clinical_context.contrast }}
+                                        </span>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        No specific measurements identified in this report.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -88,12 +161,78 @@
                     </div>
                 </div>
                 
+                <div class="row mb-4">
+                    <!-- Brain & Vascular Findings -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-danger shadow-sm">
+                            <div class="card-header bg-danger text-white">
+                                <i class="fas fa-brain me-2"></i> Brain & Vascular Findings
+                            </div>
+                            <div class="card-body">
+                                {% if infographic.clinical_context.key_findings %}
+                                    <ul class="list-group list-group-flush">
+                                        {% for finding in infographic.clinical_context.key_findings %}
+                                            <li class="list-group-item bg-transparent">
+                                                {% if finding.startswith('No ') %}
+                                                    <i class="fas fa-times-circle text-success me-2"></i>
+                                                {% else %}
+                                                    <i class="fas fa-exclamation-circle text-danger me-2"></i>
+                                                {% endif %}
+                                                {{ finding }}
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    <p class="text-muted">No specific findings were extracted from this report.</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Differential Diagnosis -->
+                    <div class="col-md-6 mb-4">
+                        <div class="card border-primary shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <i class="fas fa-diagnoses me-2"></i> Differential Diagnosis
+                            </div>
+                            <div class="card-body">
+                                {% if infographic.clinical_context.primary_condition %}
+                                    <div class="mb-3">
+                                        <h6 class="fw-bold">Primary Suspicion:</h6>
+                                        <div class="alert alert-danger">
+                                            <i class="fas fa-exclamation-circle me-2"></i>
+                                            {{ infographic.clinical_context.primary_condition }}
+                                        </div>
+                                    </div>
+                                    
+                                    {% if infographic.clinical_context.secondary_conditions %}
+                                        <h6 class="fw-bold">Other Possibilities:</h6>
+                                        <ul class="list-group list-group-flush">
+                                            {% for condition in infographic.clinical_context.secondary_conditions %}
+                                                <li class="list-group-item bg-transparent">
+                                                    <i class="fas fa-angle-right text-primary me-2"></i>
+                                                    {{ condition }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                {% else %}
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        No specific diagnoses were identified for this report.
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row">
-                    <!-- Key Findings -->
+                    <!-- Key Findings from Report Sections -->
                     <div class="col-md-6 mb-4">
                         <div class="card shadow-sm h-100">
                             <div class="card-header bg-primary text-white">
-                                <i class="fas fa-clipboard-list me-2"></i> Key Findings
+                                <i class="fas fa-clipboard-list me-2"></i> Report Impression
                             </div>
                             <div class="card-body">
                                 {% if report.processed_data.sections.IMPRESSION %}
@@ -106,7 +245,7 @@
                                 <h6 class="fw-bold">Findings:</h6>
                                 <p>{{ report.processed_data.sections.FINDINGS }}</p>
                                 {% else %}
-                                <p class="text-muted">No key findings sections identified in this report.</p>
+                                <p class="text-muted">No impression or conclusion sections identified in this report.</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -124,7 +263,7 @@
                                     <ul class="list-group list-group-flush">
                                         {% for term in report.processed_data.medical_terms %}
                                         <li class="list-group-item bg-transparent">
-                                            <span class="fw-bold">{{ term }}</span>
+                                            <span class="fw-bold text-primary">{{ term }}</span>
                                             {% if term in report.enriched_data.term_definitions %}
                                             <p class="small text-muted mb-0">{{ report.enriched_data.term_definitions[term] }}</p>
                                             {% endif %}
@@ -137,6 +276,47 @@
                                     {% else %}
                                     <p class="text-muted">No specific medical terms were identified.</p>
                                     {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Management Note -->
+                <div class="row mb-4 mt-3">
+                    <div class="col-12">
+                        <div class="card border-success shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <i class="fas fa-user-md me-2"></i> Management Note
+                            </div>
+                            <div class="card-body">
+                                <p class="mb-0">
+                                    <i class="fas fa-arrow-circle-right text-success me-2"></i>
+                                    <strong>Next Steps:</strong> Further management typically includes 
+                                    {% if infographic.clinical_context.primary_condition %}
+                                        consideration of {{ infographic.clinical_context.primary_condition }} workup,
+                                    {% endif %}
+                                    neurosurgical consultation, biopsy consideration, or follow-up imaging. 
+                                    The specific approach should be determined by the patient's clinical presentation and the treating physician's assessment.
+                                </p>
+                                
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold"><i class="fas fa-notes-medical text-primary me-2"></i>Key Medical Terms:</h6>
+                                        <ul class="small text-muted list-unstyled">
+                                            {% for term in report.processed_data.medical_terms[:5] %}
+                                                <li>{{ term }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="fw-bold"><i class="fas fa-calendar-alt text-primary me-2"></i>Follow-up Recommendations:</h6>
+                                        <ul class="small text-muted">
+                                            <li>Review with specialist</li>
+                                            <li>Consider follow-up imaging in 3-6 months</li>
+                                            <li>Monitor for clinical changes</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
