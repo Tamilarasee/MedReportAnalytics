@@ -15,7 +15,8 @@ This directory contains the user interface, frontend logic and the generic llm c
     pip install -r requirements.txt 
     ```
 2.  Navigate to this directory (`streamlit_app_analyzer`) in your terminal.
-3.  Run the application:
+3.  Update .env file with API keys
+4. Run the application:
     ```bash
     streamlit run streamlit_app.py
     ```
