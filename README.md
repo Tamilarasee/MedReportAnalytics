@@ -4,7 +4,7 @@ This directory contains the user interface, frontend logic and the generic llm c
 
 **❗️ Action Required for Team ❗️**
 
-*   The fine-tuned/local LLM backend (prediction and chat models) is developed and managed separately and **is not included in this repository**.
+*   The fine-tuned/local LLM backend (prediction and chat models) **is not included in this repository**.
 *   To run this Streamlit application successfully along with finetuned llm, you must have the fine-tuned model's API endpoints running (either locally or deployed).
 *   You will need to **modify `app_components.py`** (as detailed in the "Integration" section below) to point the API calls to your specific fine-tuned model endpoints.
 
