@@ -27,7 +27,7 @@ load_dotenv()
 def load_llm_model(model_choice):
     print(f"Attempting to load model: {model_choice}") 
     try:
-        if model_choice == "Llama3-ELAINE-medLLM (Radiology)":
+        if model_choice == "Finetuned medllama2 (Radiology)":
             return None # we need to get the api endpoint for the finetuned radiology model
         elif model_choice == "OpenAI GPT-4":
             return ChatOpenAI(model_name="gpt-4", temperature=0.3, openai_api_key=os.getenv("OPENAI_API_KEY"))
@@ -75,14 +75,7 @@ def upload_view():
         *   Predicts potential medical conditions based on report content.
         *   Generates concise summaries highlighting key findings.
     *   **Interactive Chat (Chat Page):** Ask follow-up questions about the report.
-    
-    
-    **How It Works:**
-    1.  Select an AI model below.
-    2.  Upload your medical PDF report.
-    3.  Click 'Analyze Report' to process the text.
-    4.  Navigate to the 'Analyze' page to review extracted information and predicted conditions.
-    5.  Navigate to the 'Chat' page to ask questions about the report findings.
+
     """)
     st.divider()
 
@@ -92,11 +85,10 @@ def upload_view():
         "Choose an AI model to analyze the report:",
         [
             "OpenAI GPT-4",
-            "OpenAI GPT-3.5",
-            "Llama 3 Instruct (8B)",
+            "OpenAI GPT-3.5",            
             "Mixtral",
             "Llama 3 Local (Ollama)",
-            "Llama3-ELAINE-medLLM (Radiology)"
+            "Finetuned medllama2 (Radiology)"
         ],
         key="model_selector_main",
         index=["OpenAI GPT-4", "OpenAI GPT-3.5", "Llama 3 Instruct (8B)", "Mixtral", "Llama 3 Local (Ollama)", "Llama3-ELAINE-medLLM (Radiology)"].index(st.session_state.get('model_choice', "OpenAI GPT-4"))

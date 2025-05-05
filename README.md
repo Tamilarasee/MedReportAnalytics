@@ -1,52 +1,69 @@
-# Streamlit Report Analyzer Application
+# MedReport Analyzer Application
 
-This directory contains the user interface, frontend logic and the generic llm calls for the Medical Report Analyzer application, built using Streamlit.
+MedReport Analyzer is an application that implements Natural Language Processing (NLP) techniques aiming to assist clinicians, researchers, and data scientists. It streamlines the process of summarizing various medical reports (like lab results, pathology reports, and radiology reports) and provides predicted medical conditions based on the content. A key feature is that the analysis is grounded in the report's text to minimize the risk of hallucination. The application also includes a conversational chat feature, allowing users to ask questions about the report, the generated summary, or any follow-up inquiries.
 
-**❗️ Action Required for Team ❗️**
-
-*   The fine-tuned/local LLM backend (prediction and chat models) **is not included in this repository**.
-*   To run this Streamlit application successfully along with finetuned llm, you must have the fine-tuned model's API endpoints running (either locally or deployed).
-*   You will need to **modify `app_components.py`** (as detailed in the "Integration" section below) to point the API calls to your specific fine-tuned model endpoints.
+This directory contains the user interface, frontend logic, and the generic LLM calls for the application, built using Streamlit.
 
 ## How to Run
 
-1.  Ensure you have the required packages installed (see `requirements.txt`):
+1.  **Prerequisites:** Ensure you have Python installed.
+2.  **Clone the Repository:** Clone this repository to your account
+3.  **Install Dependencies:** Set up a virtual environment (recommended) and install the required packages:
     ```bash
-    pip install -r requirements.txt 
+    python -m venv venv
+    source venv/bin/activate # On Windows use `venv\Scripts\activate`
+    pip install -r requirements.txt
     ```
-2.  Navigate to this directory (`streamlit_app_analyzer`) in your terminal.
-3.  Update .env file with API keys
-4. Run the application:
+4.  **API Keys:** Edit the `.env` file in the `streamlit_app_analyzer` directory and add your necessary API keys (e.g., for OpenAI if you plan to use it):
+    ```
+    OPENAI_API_KEY="your_openai_api_key_here"
+    DEEPINFRA_API_KEY="your_key_here"    
+    ```
+5.  **Run the Application:**
     ```bash
     streamlit run streamlit_app.py
     ```
 
-## Purpose
+## Purpose and Features
 
-The application allows users to upload medical reports (primarily PDFs), extracts the text content, and provides functionalities for:
-- Viewing the extracted text.
-- Generating summaries and identifying key medical conditions (prediction).
-- Chatting with an AI assistant about the report content.
+The application allows users to:
+
+*   **Upload Medical Reports:** Primarily handles PDF files, extracting the text content.
+*   **View Extracted Text:** Displays the raw text extracted from the uploaded report for verification.
+*   **Generate Summaries & Predictions:** Utilizes LLMs to create concise summaries and identify potential medical conditions mentioned in the report. Analysis is grounded in the source text.
+*   **Conversational Chat:** Enables users to interact with an AI assistant to ask questions specifically about the loaded report and the analysis content.
 
 ## Key Files
 
-- `streamlit_app.py`: The main entry point for the Streamlit application. Sets up the basic page structure.
-- `app_components.py`: Contains the core UI components and logic for handling file uploads, displaying results, managing chat interactions, and performing analysis. **This is the primary file requiring modification for backend integration.**
-- `pdf_extraction.py`: Utility functions for extracting text from PDF files using `pdfplumber`.
-- `app_state.py`: Manages the session state for the Streamlit application.
-- `requirements.txt`: Lists the necessary Python packages for this application.
-- `Dataset/`: Placeholder or contains sample data for testing.
+*   `streamlit_app.py`: The main entry point for the Streamlit application. Sets up the basic page structure and navigation.
+*   `app_components.py`: Contains the core UI components and logic for file uploads, results display, chat interactions, and analysis calls. **This is the primary file for integrating different LLM backends.**
+*   `pdf_extraction.py`: Utility functions for extracting text from PDF files using `pdfplumber`.
+*   `app_state.py`: Manages the session state for the Streamlit application (e.g., storing report text, chat history).
+*   `requirements.txt`: Lists the necessary Python packages.
+*   `.env`: Stores API keys and other environment variables.
+*   `Dataset/`: Can be used for sample data or testing purposes.
 
-## Integration with Fine-Tuned LLM
+## Approach
 
-Currently, the analysis and chat functionalities might be using generic LLMs (like local Ollama or standard OpenAI models selected via `load_llm_model`) or are placeholders. To leverage the specialized fine-tuned medical LLM (presumably served from a separate backend, potentially the `Finetuned_model` directory), the following areas within `app_components.py` need to be updated:
+    ```markdown
+    ![Approach](approach.jpg)
+    ```
 
-1.  **Medical Condition Prediction/Analysis (within `analyze_view()` function):**
-    - Locate the section inside `analyze_view` (starts around line 178) where the `summary_prompt` (line ~197) and `diagnosis_prompt` (line ~205) are defined and used to generate results with the loaded `llm` object.
-    - **Modify this part:** Instead of invoking the generic `llm` (e.g., `ChatOpenAI`, `ChatOllama`), insert code to make an API call (e.g., using `requests`) to your fine-tuned model's prediction/analysis endpoint. Send the `st.session_state.report_text` and appropriate instructions derived from the prompts. Parse the API response to populate `st.session_state.summary` and `st.session_state.diagnosis_data`.
+## LLM Integration
 
-2.  **Report Chat Functionality (within `chat_view()` function):**
-    - Find the section inside `chat_view` (starts around line 441) where the user's input (`prompt`) is taken and a response is generated by invoking the loaded `llm` object.
-    - **Modify this part:** Replace the call to the generic `llm` with an API call (e.g., using `requests`) to your fine-tuned model's chat endpoint. Send the necessary context, including chat history (`st.session_state.messages`), the report text (`st.session_state.report_text`), and the user's `prompt`. Use the API response as the AI's reply in the chat interface.
+This application is designed to work with various Large Language Models (LLMs). The code in this directory is pre-configured to use:
 
-These integrations will likely involve adding LLM calls (alongside `ChatOllama` or `ChatOpenAI` instances obtained via `load_llm_model`) with `requests` calls to the specific API endpoints serving the fine-tuned model. 
+*   **General Purpose Models:**
+    *   OpenAI models (e.g., GPT-3.5, GPT-4) via API.
+    *   Models available through Ollama (e.g., Mixtral, Llama 2) running locally.
+    *   Configuration for these models (like selecting which one to use and providing API keys in `.env`) is handled within `app_components.py` (specifically the `load_llm_model` function and its usage).
+
+*   **Fine-Tuned Medical LLM:**
+    *   To use a specialized, fine-tuned MedLlama2 model adapted for medical report analysis, you need to use the code provided separately in the **`MedReportAnalytics-main-LOCAL-LLM.zip`** archive (found in the parent directory or provided alongside this project).
+    *   That archive contains a version of the application specifically set up to run and interact with the fine-tuned model as a local backend service. It includes the necessary API call integrations and prompts in its version of `app_components.py` and instructions for running the fine-tuned model server itself.
+
+**In summary:** Use the code in *this* directory if you want to connect to OpenAI or a local Ollama instance. Use the code in the **`MedReportAnalytics-main-LOCAL-LLM.zip`** archive if you want to run the fine-tuned MedLlama2 model backend.
+
+
+
+
