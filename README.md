@@ -14,7 +14,7 @@ This directory contains the user interface, frontend logic, and the generic LLM 
     source venv/bin/activate # On Windows use `venv\Scripts\activate`
     pip install -r requirements.txt
     ```
-4.  **API Keys:** Edit the `.env` file in the `streamlit_app_analyzer` directory and add your necessary API keys (e.g., for OpenAI if you plan to use it):
+4.  **API Keys:** Edit the `.env` file and add your necessary API keys (e.g., for OpenAI if you plan to use it):
     ```
     OPENAI_API_KEY="your_openai_api_key_here"
     DEEPINFRA_API_KEY="your_key_here"    
@@ -45,9 +45,7 @@ The application allows users to:
 
 ## Approach
 
-    ```markdown
-    ![Approach](approach.jpg)
-    ```
+![Approach](approach.jpg)
 
 ## LLM Integration
 
